@@ -1,0 +1,26 @@
+service: fastapi-aws-lambda
+
+provider:
+  name: aws
+  runtime: python3.8
+  region: us-east-1 # Choose your region
+  memorySize: 512   # Adjust based on your needs
+  timeout: 10       # Max timeout for lambda execution in seconds
+
+functions:
+  app:
+    handler: main.handler
+    events:
+      - httpApi:
+          path: /
+          method: GET
+      - httpApi:
+          path: /chat
+          method: GET
+
+plugins:
+  - serverless-python-requirements
+
+custom:
+  pythonRequirements:
+    dockerizePip: non-linux

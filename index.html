@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat with AI</title>
+    <link rel="stylesheet" href="style.css"> <!-- Link to the CSS file -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="chat-container">
+        <h1>Chat AI</h1>
+        <div class="chat-box" id="chat-box"></div>
+        <div class="input-container">
+            <input type="text" id="user-input" placeholder="Type your message here..." />
+            <button id="send-button">Send</button>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $('#send-button').click(function() {
+                var userMessage = $('#user-input').val();
+                
+                if (userMessage.trim() === "") {
+                    alert("Please enter a message.");
+                    return;
+                }
+
+                
+                $('#chat-box').append('<div class="user-message message-box">' + userMessage + '</div>');
+                $('#user-input').val('');
+
+                // Send a POST request to the backend
+                $.ajax({
+                    url: 'http://127.0.0.1:8000/chat/',  
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ user_message: userMessage }),  
+                    success: function(data) {
+                        
+                        if (data.response) {
+                            $('#chat-box').append('<div class="ai-message message-box">' + data.response + '</div>');
+                        } else {
+                            $('#chat-box').append('<div class="ai-message message-box">Error: No response from AI.</div>');
+                        }
+                        $('#chat-box').scrollTop($('#chat-box')[0].scrollHeight);
+                    },
+                    error: function() {
+                        
+                        $('#chat-box').append('<div class="ai-message message-box">AI: Error communicating with the server.</div>');
+                        $('#chat-box').scrollTop($('#chat-box')[0].scrollHeight);
+                    }
+                });
+            });
+
+            
+            $('#user-input').keypress(function(e) {
+                if (e.which == 13) {
+                    $('#send-button').click();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
